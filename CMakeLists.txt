@@ -36,51 +36,11 @@ set(OpenCV_LIBS
     opencv_core
     opencv_imgproc
     opencv_imgcodecs
-    opencv_videoio
     opencv_highgui
     opencv_features2d
+    opencv_flann
     opencv_calib3d
     opencv_video
-    opencv_flann
-    opencv_ml
-    opencv_objdetect
-    opencv_photo
-    opencv_stitching
-    opencv_videostab
-    opencv_dnn
-    opencv_aruco
-    opencv_bgsegm
-    opencv_bioinspired
-    opencv_ccalib
-    opencv_datasets
-    opencv_dnn_objdetect
-    opencv_dnn_superres
-    opencv_dpm
-    opencv_face
-    opencv_freetype
-    opencv_fuzzy
-    opencv_hdf
-    opencv_hfs
-    opencv_img_hash
-    opencv_line_descriptor
-    opencv_optflow
-    opencv_phase_unwrapping
-    opencv_plot
-    opencv_quality
-    opencv_reg
-    opencv_rgbd
-    opencv_saliency
-    opencv_shape
-    opencv_stereo
-    opencv_structured_light
-    opencv_superres
-    opencv_surface_matching
-    opencv_text
-    opencv_tracking
-    opencv_viz
-    opencv_ximgproc
-    opencv_xobjdetect
-    opencv_xphoto
 )
 
 find_package(Eigen3 3.1.0 REQUIRED)

@@ -30,29 +30,34 @@ endif()
 
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../../cmake_modules)
 
-find_package(OpenCV 3.0 QUIET)
-if(NOT OpenCV_FOUND)
-   find_package(OpenCV 2.4.3 QUIET)
-   if(NOT OpenCV_FOUND)
-      message(FATAL_ERROR "OpenCV > 2.4.3 not found.")
-   endif()
-endif()
+# Use system OpenCV installation directly - only include libraries that are actually available
+set(OpenCV_INCLUDE_DIRS "/usr/include/opencv4")
+set(OpenCV_LIBS 
+    opencv_core
+    opencv_imgproc
+    opencv_imgcodecs
+    opencv_highgui
+    opencv_features2d
+    opencv_flann
+    opencv_calib3d
+    opencv_video
+)
 
 find_package(Eigen3 3.1.0 REQUIRED)
-find_package(Pangolin REQUIRED)
 
 include_directories(
 ${PROJECT_SOURCE_DIR}
 ${PROJECT_SOURCE_DIR}/../../../
 ${PROJECT_SOURCE_DIR}/../../../include
 ${PROJECT_SOURCE_DIR}/../../../include/CameraModels
-${Pangolin_INCLUDE_DIRS}
+${PROJECT_SOURCE_DIR}/../../../Thirdparty/Sophus
+${EIGEN3_INCLUDE_DIR}
+${OpenCV_INCLUDE_DIRS}
 )
 
 set(LIBS 
 ${OpenCV_LIBS} 
 ${EIGEN3_LIBS}
-${Pangolin_LIBRARIES}
 ${PROJECT_SOURCE_DIR}/../../../Thirdparty/DBoW2/lib/libDBoW2.so
 ${PROJECT_SOURCE_DIR}/../../../Thirdparty/g2o/lib/libg2o.so
 ${PROJECT_SOURCE_DIR}/../../../lib/libORB_SLAM3.so
@@ -65,17 +70,6 @@ src/ros_mono.cc
 )
 
 target_link_libraries(Mono
-${LIBS}
-)
-
-# Node for monocular camera (Augmented Reality Demo)
-rosbuild_add_executable(MonoAR
-src/AR/ros_mono_ar.cc
-src/AR/ViewerAR.h
-src/AR/ViewerAR.cc
-)
-
-target_link_libraries(MonoAR
 ${LIBS}
 )
 
@@ -94,23 +88,5 @@ src/ros_rgbd.cc
 )
 
 target_link_libraries(RGBD
-${LIBS}
-)
-
-# Node for monocular-inertial camera
-rosbuild_add_executable(Mono_Inertial
-src/ros_mono_inertial.cc
-)
-
-target_link_libraries(Mono_Inertial
-${LIBS}
-)
-
-# Node for stereo-inertial camera
-rosbuild_add_executable(Stereo_Inertial
-src/ros_stereo_inertial.cc
-)
-
-target_link_libraries(Stereo_Inertial
 ${LIBS}
 )
