@@ -30,19 +30,13 @@ endif()
 
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../../cmake_modules)
 
-# Use system OpenCV installation directly - only include libraries that are actually available
-set(OpenCV_INCLUDE_DIRS "/usr/include/opencv4")
-set(OpenCV_LIBS 
-    opencv_core
-    opencv_imgproc
-    opencv_imgcodecs
-    opencv_highgui
-    opencv_features2d
-    opencv_flann
-    opencv_calib3d
-    opencv_video
-)
+find_package(OpenCV 4.4)
+   if(NOT OpenCV_FOUND)
+      message(FATAL_ERROR "OpenCV > 4.4 not found.")
+   endif()
 
+MESSAGE("OPENCV VERSION:")
+MESSAGE(${OpenCV_VERSION})
 find_package(Eigen3 3.1.0 REQUIRED)
 
 include_directories(
