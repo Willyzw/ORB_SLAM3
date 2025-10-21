@@ -41,7 +41,7 @@ namespace ORB_SLAM3 {
                 exit(-1);
             }
             else{
-                std::cerr << name << " optional parameter does not exist..." << std::endl;
+                // std::cerr << name << " optional parameter does not exist..." << std::endl;
                 found = false;
                 return 0.0f;
             }
@@ -65,7 +65,7 @@ namespace ORB_SLAM3 {
                 exit(-1);
             }
             else{
-                std::cerr << name << " optional parameter does not exist..." << std::endl;
+                // std::cerr << name << " optional parameter does not exist..." << std::endl;
                 found = false;
                 return 0;
             }
@@ -89,7 +89,7 @@ namespace ORB_SLAM3 {
                 exit(-1);
             }
             else{
-                std::cerr << name << " optional parameter does not exist..." << std::endl;
+                // std::cerr << name << " optional parameter does not exist..." << std::endl;
                 found = false;
                 return string();
             }
@@ -113,7 +113,7 @@ namespace ORB_SLAM3 {
                 exit(-1);
             }
             else{
-                std::cerr << name << " optional parameter does not exist..." << std::endl;
+                // std::cerr << name << " optional parameter does not exist..." << std::endl;
                 found = false;
                 return cv::Mat();
             }
@@ -137,48 +137,48 @@ namespace ORB_SLAM3 {
             exit(-1);
         }
         else{
-            cout << "Loading settings from " << configFile << endl;
+            // cout << "Loading settings from " << configFile << endl;
         }
 
         //Read first camera
         readCamera1(fSettings);
-        cout << "\t-Loaded camera 1" << endl;
+        // cout << "\t-Loaded camera 1" << endl;
 
         //Read second camera if stereo (not rectified)
         if(sensor_ == System::STEREO || sensor_ == System::IMU_STEREO){
             readCamera2(fSettings);
-            cout << "\t-Loaded camera 2" << endl;
+            // cout << "\t-Loaded camera 2" << endl;
         }
 
         //Read image info
         readImageInfo(fSettings);
-        cout << "\t-Loaded image info" << endl;
+        // cout << "\t-Loaded image info" << endl;
 
         if(sensor_ == System::IMU_MONOCULAR || sensor_ == System::IMU_STEREO || sensor_ == System::IMU_RGBD){
             readIMU(fSettings);
-            cout << "\t-Loaded IMU calibration" << endl;
+            // cout << "\t-Loaded IMU calibration" << endl;
         }
 
         if(sensor_ == System::RGBD || sensor_ == System::IMU_RGBD){
             readRGBD(fSettings);
-            cout << "\t-Loaded RGB-D calibration" << endl;
+            // cout << "\t-Loaded RGB-D calibration" << endl;
         }
 
         readORB(fSettings);
-        cout << "\t-Loaded ORB settings" << endl;
+        // cout << "\t-Loaded ORB settings" << endl;
         readViewer(fSettings);
-        cout << "\t-Loaded viewer settings" << endl;
+        // cout << "\t-Loaded viewer settings" << endl;
         readLoadAndSave(fSettings);
-        cout << "\t-Loaded Atlas settings" << endl;
+        // cout << "\t-Loaded Atlas settings" << endl;
         readOtherParameters(fSettings);
-        cout << "\t-Loaded misc parameters" << endl;
+        // cout << "\t-Loaded misc parameters" << endl;
 
         if(bNeedToRectify_){
             precomputeRectificationMaps();
-            cout << "\t-Computed rectification maps" << endl;
+            // cout << "\t-Computed rectification maps" << endl;
         }
 
-        cout << "----------------------------------" << endl;
+        // cout << "----------------------------------" << endl;
     }
 
     void Settings::readCamera1(cv::FileStorage &fSettings) {

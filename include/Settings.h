@@ -132,7 +132,7 @@ namespace ORB_SLAM3 {
                     exit(-1);
                 }
                 else{
-                    std::cerr << name << " optional parameter does not exist..." << std::endl;
+                    // std::cerr << name << " optional parameter does not exist..." << std::endl;
                     found = false;
                     return T();
                 }
