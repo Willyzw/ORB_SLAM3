@@ -339,6 +339,45 @@ public:
         return result;
     }
     
+    // Get all map points including inactive ones from the atlas
+    py::array_t<double> getAllMapPoints() {
+        if (!mpSystem) {
+            throw std::runtime_error("System not initialized. Call initialize() first.");
+        }
+        
+        // Get all map points from the atlas (including inactive ones)
+        std::vector<ORB_SLAM3::MapPoint*> allMapPoints = mpSystem->GetAllMapPoints();
+        
+        // Count valid map points
+        int validCount = 0;
+        for (const auto& mp : allMapPoints) {
+            if (mp && !mp->isBad()) {
+                validCount++;
+            }
+        }
+        
+        if (validCount == 0) {
+            return py::array_t<double>(std::vector<size_t>{0, 3});
+        }
+        
+        // Create numpy array for map points (x, y, z coordinates)
+        py::array_t<double> result = py::array_t<double>(std::vector<size_t>{static_cast<size_t>(validCount), 3});
+        auto buf = result.mutable_unchecked<2>();
+        
+        int idx = 0;
+        for (const auto& mp : allMapPoints) {
+            if (mp && !mp->isBad()) {
+                Eigen::Vector3f worldPos = mp->GetWorldPos();
+                buf(idx, 0) = static_cast<double>(worldPos(0));
+                buf(idx, 1) = static_cast<double>(worldPos(1));
+                buf(idx, 2) = static_cast<double>(worldPos(2));
+                idx++;
+            }
+        }
+        
+        return result;
+    }
+    
 private:
     ORB_SLAM3::System::eSensor mSensorType;
     std::string mVocabFile;

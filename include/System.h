@@ -170,6 +170,9 @@ public:
     int GetTrackingState();
     std::vector<MapPoint*> GetTrackedMapPoints();
     std::vector<cv::KeyPoint> GetTrackedKeyPointsUn();
+    
+    // Get all map points from the atlas (including inactive ones)
+    std::vector<MapPoint*> GetAllMapPoints();
 
     // For debugging
     double GetTimeFromIMUInit();

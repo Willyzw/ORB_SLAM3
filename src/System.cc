@@ -1466,5 +1466,10 @@ bool System::LoadAtlas(int type)
     return false;
 }
 
+std::vector<MapPoint*> System::GetAllMapPoints()
+{
+    return mpAtlas->GetAllMapPoints();
+}
+
 } //namespace ORB_SLAM
 
