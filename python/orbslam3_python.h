@@ -248,6 +248,97 @@ public:
         return true;
     }
     
+    // Get current frame keypoints
+    py::array_t<float> getCurrentFrameKeypoints() {
+        if (!mpSystem) {
+            throw std::runtime_error("System not initialized. Call initialize() first.");
+        }
+        
+        // Get tracked keypoints from the system
+        std::vector<cv::KeyPoint> keypoints = mpSystem->GetTrackedKeyPointsUn();
+        
+        if (keypoints.empty()) {
+            return py::array_t<float>(std::vector<size_t>{0, 2});
+        }
+        
+        // Create numpy array for keypoints (x, y coordinates)
+        py::array_t<float> result = py::array_t<float>(std::vector<size_t>{static_cast<size_t>(keypoints.size()), 2});
+        auto buf = result.mutable_unchecked<2>();
+        
+        for (size_t i = 0; i < keypoints.size(); i++) {
+            buf(i, 0) = keypoints[i].pt.x;
+            buf(i, 1) = keypoints[i].pt.y;
+        }
+        
+        return result;
+    }
+    
+    // Get current frame map points with 3D coordinates
+    py::array_t<double> getCurrentFrameMapPoints() {
+        if (!mpSystem) {
+            throw std::runtime_error("System not initialized. Call initialize() first.");
+        }
+        
+        // Get tracked map points from the system
+        std::vector<ORB_SLAM3::MapPoint*> mapPoints = mpSystem->GetTrackedMapPoints();
+        
+        // Count valid map points
+        int validCount = 0;
+        for (const auto& mp : mapPoints) {
+            if (mp && !mp->isBad()) {
+                validCount++;
+            }
+        }
+        
+        if (validCount == 0) {
+            return py::array_t<double>(std::vector<size_t>{0, 3});
+        }
+        
+        // Create numpy array for map points (x, y, z coordinates)
+        py::array_t<double> result = py::array_t<double>(std::vector<size_t>{static_cast<size_t>(validCount), 3});
+        auto buf = result.mutable_unchecked<2>();
+        
+        int idx = 0;
+        for (const auto& mp : mapPoints) {
+            if (mp && !mp->isBad()) {
+                Eigen::Vector3f worldPos = mp->GetWorldPos();
+                buf(idx, 0) = static_cast<double>(worldPos(0));
+                buf(idx, 1) = static_cast<double>(worldPos(1));
+                buf(idx, 2) = static_cast<double>(worldPos(2));
+                idx++;
+            }
+        }
+        
+        return result;
+    }
+    
+    // Get current frame keypoints with additional information (x, y, response, octave)
+    py::array_t<float> getCurrentFrameKeypointsDetailed() {
+        if (!mpSystem) {
+            throw std::runtime_error("System not initialized. Call initialize() first.");
+        }
+        
+        // Get tracked keypoints from the system
+        std::vector<cv::KeyPoint> keypoints = mpSystem->GetTrackedKeyPointsUn();
+        
+        if (keypoints.empty()) {
+            return py::array_t<float>(std::vector<size_t>{0, 4});
+        }
+        
+        // Create numpy array for keypoints (x, y, response, octave)
+        py::array_t<float> result = py::array_t<float>(std::vector<size_t>{static_cast<size_t>(keypoints.size()), 4});
+        auto buf = result.mutable_unchecked<2>();
+        
+        for (size_t i = 0; i < keypoints.size(); i++) {
+            buf(i, 0) = keypoints[i].pt.x;
+            buf(i, 1) = keypoints[i].pt.y;
+            buf(i, 2) = keypoints[i].response;
+            buf(i, 3) = static_cast<float>(keypoints[i].octave);
+        }
+        
+        return result;
+    }
+    
 private:
     ORB_SLAM3::System::eSensor mSensorType;
     std::string mVocabFile;

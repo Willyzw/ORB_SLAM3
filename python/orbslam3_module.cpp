@@ -56,5 +56,8 @@ PYBIND11_MODULE(orbslam3, m) {
         .def("get_trajectory", &ORBSLAM3Python::getTrajectory)
         .def("get_tracking_state", &ORBSLAM3Python::getTrackingState)
         .def("is_lost", &ORBSLAM3Python::isLost)
-        .def("is_finished", &ORBSLAM3Python::isFinished);
+        .def("is_finished", &ORBSLAM3Python::isFinished)
+        .def("get_current_frame_keypoints", &ORBSLAM3Python::getCurrentFrameKeypoints)
+        .def("get_current_frame_mappoints", &ORBSLAM3Python::getCurrentFrameMapPoints)
+        .def("get_current_frame_keypoints_detailed", &ORBSLAM3Python::getCurrentFrameKeypointsDetailed);
 }
