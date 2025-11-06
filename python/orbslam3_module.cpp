@@ -58,7 +58,10 @@ PYBIND11_MODULE(orbslam3, m) {
         .def("is_lost", &ORBSLAM3Python::isLost)
         .def("is_finished", &ORBSLAM3Python::isFinished)
         .def("get_current_frame_keypoints", &ORBSLAM3Python::getCurrentFrameKeypoints)
+        .def("get_current_frame_keypoints_right", &ORBSLAM3Python::getCurrentFrameKeypointsRight)
         .def("get_current_frame_mappoints", &ORBSLAM3Python::getCurrentFrameMapPoints)
         .def("get_current_frame_keypoints_detailed", &ORBSLAM3Python::getCurrentFrameKeypointsDetailed)
-        .def("get_all_mappoints", &ORBSLAM3Python::getAllMapPoints);
+        .def("get_all_mappoints", &ORBSLAM3Python::getAllMapPoints)
+        .def("get_left_image_to_feed", &ORBSLAM3Python::getLeftImageToFeed)
+        .def("get_right_image_to_feed", &ORBSLAM3Python::getRightImageToFeed);
 }

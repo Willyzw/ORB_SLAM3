@@ -232,23 +232,22 @@ Sophus::SE3f System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, 
         exit(-1);
     }
 
-    cv::Mat imLeftToFeed, imRightToFeed;
     if(settings_ && settings_->needToRectify()){
         cv::Mat M1l = settings_->M1l();
         cv::Mat M2l = settings_->M2l();
         cv::Mat M1r = settings_->M1r();
         cv::Mat M2r = settings_->M2r();
 
-        cv::remap(imLeft, imLeftToFeed, M1l, M2l, cv::INTER_LINEAR);
-        cv::remap(imRight, imRightToFeed, M1r, M2r, cv::INTER_LINEAR);
+        cv::remap(imLeft, mImLeftToFeed, M1l, M2l, cv::INTER_LINEAR);
+        cv::remap(imRight, mImRightToFeed, M1r, M2r, cv::INTER_LINEAR);
     }
     else if(settings_ && settings_->needToResize()){
-        cv::resize(imLeft,imLeftToFeed,settings_->newImSize());
-        cv::resize(imRight,imRightToFeed,settings_->newImSize());
+        cv::resize(imLeft,mImLeftToFeed,settings_->newImSize());
+        cv::resize(imRight,mImRightToFeed,settings_->newImSize());
     }
     else{
-        imLeftToFeed = imLeft.clone();
-        imRightToFeed = imRight.clone();
+        mImLeftToFeed = imLeft.clone();
+        mImRightToFeed = imRight.clone();
     }
 
     // Check mode change
@@ -296,7 +295,7 @@ Sophus::SE3f System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, 
             mpTracker->GrabImuData(vImuMeas[i_imu]);
 
     // std::cout << "start GrabImageStereo" << std::endl;
-    Sophus::SE3f Tcw = mpTracker->GrabImageStereo(imLeftToFeed,imRightToFeed,timestamp,filename);
+    Sophus::SE3f Tcw = mpTracker->GrabImageStereo(mImLeftToFeed,mImRightToFeed,timestamp,filename);
 
     // std::cout << "out grabber" << std::endl;
 
@@ -304,6 +303,7 @@ Sophus::SE3f System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, 
     mTrackingState = mpTracker->mState;
     mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
     mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
+    mTrackedKeyPointsRight = mpTracker->mCurrentFrame.mvKeysRight;
 
     return Tcw;
 }
@@ -1310,6 +1310,12 @@ vector<cv::KeyPoint> System::GetTrackedKeyPointsUn()
     return mTrackedKeyPointsUn;
 }
 
+vector<cv::KeyPoint> System::GetTrackedKeyPointsRight()
+{
+    unique_lock<mutex> lock(mMutexState);
+    return mTrackedKeyPointsRight;
+}
+
 double System::GetTimeFromIMUInit()
 {
     double aux = mpLocalMapper->GetCurrKFTime()-mpLocalMapper->mFirstTs;
@@ -1469,6 +1475,18 @@ bool System::LoadAtlas(int type)
 std::vector<MapPoint*> System::GetAllMapPoints()
 {
     return mpAtlas->GetAllMapPoints();
+}
+
+cv::Mat System::GetLeftImageToFeed()
+{
+    unique_lock<mutex> lock(mMutexImages);
+    return mImLeftToFeed.clone();
+}
+
+cv::Mat System::GetRightImageToFeed()
+{
+    unique_lock<mutex> lock(mMutexImages);
+    return mImRightToFeed.clone();
 }
 
 } //namespace ORB_SLAM

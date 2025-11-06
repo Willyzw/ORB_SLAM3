@@ -170,6 +170,7 @@ public:
     int GetTrackingState();
     std::vector<MapPoint*> GetTrackedMapPoints();
     std::vector<cv::KeyPoint> GetTrackedKeyPointsUn();
+    std::vector<cv::KeyPoint> GetTrackedKeyPointsRight();
     
     // Get all map points from the atlas (including inactive ones)
     std::vector<MapPoint*> GetAllMapPoints();
@@ -241,6 +242,7 @@ private:
     int mTrackingState;
     std::vector<MapPoint*> mTrackedMapPoints;
     std::vector<cv::KeyPoint> mTrackedKeyPointsUn;
+    std::vector<cv::KeyPoint> mTrackedKeyPointsRight;
     std::mutex mMutexState;
 
     //
@@ -250,6 +252,16 @@ private:
     string mStrVocabularyFilePath;
 
     Settings* settings_;
+
+    // Processed images for stereo tracking (accessible from Python)
+    cv::Mat mImLeftToFeed;
+    cv::Mat mImRightToFeed;
+    std::mutex mMutexImages;
+
+public:
+    // Getter methods for processed images
+    cv::Mat GetLeftImageToFeed();
+    cv::Mat GetRightImageToFeed();
 };
 
 }// namespace ORB_SLAM

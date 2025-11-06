@@ -273,6 +273,32 @@ public:
         return result;
     }
     
+    // Get current frame right image keypoints (for stereo mode)
+    py::array_t<float> getCurrentFrameKeypointsRight() {
+        if (!mpSystem) {
+            throw std::runtime_error("System not initialized. Call initialize() first.");
+        }
+        
+        // Get tracked right keypoints from the system
+        std::vector<cv::KeyPoint> keypoints = mpSystem->GetTrackedKeyPointsRight();
+        
+        if (keypoints.empty()) {
+            return py::array_t<float>(std::vector<size_t>{0, 2});
+        }
+        
+        // Create numpy array for keypoints (x, y coordinates)
+        py::array_t<float> result = py::array_t<float>(std::vector<size_t>{static_cast<size_t>(keypoints.size()), 3});
+        auto buf = result.mutable_unchecked<2>();
+        
+        for (size_t i = 0; i < keypoints.size(); i++) {
+            buf(i, 0) = keypoints[i].pt.x;
+            buf(i, 1) = keypoints[i].pt.y;
+            buf(i, 2) = keypoints[i].response;
+        }
+        
+        return result;
+    }
+    
     // Get current frame map points with 3D coordinates
     py::array_t<double> getCurrentFrameMapPoints() {
         if (!mpSystem) {
@@ -376,6 +402,36 @@ public:
         }
         
         return result;
+    }
+    
+    // Get left processed image
+    py::array_t<unsigned char> getLeftImageToFeed() {
+        if (!mpSystem) {
+            throw std::runtime_error("System not initialized. Call initialize() first.");
+        }
+        
+        cv::Mat leftImage = mpSystem->GetLeftImageToFeed();
+        
+        if (leftImage.empty()) {
+            return py::array_t<unsigned char>(std::vector<size_t>{0, 0});
+        }
+        
+        return NDArrayConverter::mat_to_numpy(leftImage);
+    }
+    
+    // Get right processed image
+    py::array_t<unsigned char> getRightImageToFeed() {
+        if (!mpSystem) {
+            throw std::runtime_error("System not initialized. Call initialize() first.");
+        }
+        
+        cv::Mat rightImage = mpSystem->GetRightImageToFeed();
+        
+        if (rightImage.empty()) {
+            return py::array_t<unsigned char>(std::vector<size_t>{0, 0});
+        }
+        
+        return NDArrayConverter::mat_to_numpy(rightImage);
     }
     
 private:
